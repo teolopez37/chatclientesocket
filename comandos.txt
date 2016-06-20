@@ -1,0 +1,12 @@
+npm init
+
+(bajo la licencia se pone )
+
+
+,"dependencies":{
+  		"socket.io":"*",
+  		"express": "*"
+  	}
+
+
+npm install
