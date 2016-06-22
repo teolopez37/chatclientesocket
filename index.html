@@ -17,22 +17,20 @@
 </head>
 <body>
 <section id="sctIP">
-	<LABEL for="lblIP">ingrese IP: </LABEL>
-    <INPUT type="text" id="txtIP"><BR>
     <button id="btnSetIP">agregar IP</button>
 </section>
 
 <div class="container">
 	<div id="userFormArea" class="row">
 		<div class="col-md-12">
-			
-		<form id="userForm">
+			<form id="userForm">
+				<LABEL for="lblIP">ingrese IP: </LABEL>
+				<INPUT type="text" id="txtIP"><BR>
 				<label>Enter Username</label>
 				<textarea class="form-control" id="username"></textarea>
 				<br/>
 				<input type="submit" class="btn btn-primary" value="Login"></input>
 			</form>
-
 		</div>
 	</div>
 	<div id="messageArea" class="row">
@@ -57,8 +55,7 @@
 </div>
 <script>
 	$(function(){
-		//var socket = io.connect();
-		//var socket = io('http://192.168.1.6:3000');
+		//SETEAMOS UN VALOR FICTICIO DEL SERVIDOR Y PUERTO
 		var socket = io('http://192.168.1.20:3000');
 
 		var $messageForm = $('#messageForm');
@@ -68,65 +65,65 @@
 		var $messageArea = $('#messageArea');
 		var $userFormArea = $('#userFormArea');
 		var $userForm = $('#userForm');
-		var $users = $('#userFormArea')
+		var $users = $('#users')
 		var $username = $('#username');
 
-	$('#btnSetIP').click(function(){
-		var iptexto = ($('#txtIP').val())+"";
-				//alert(iptexto);
-		socket = io('http://'+ iptexto +':3000');
+		var bandera = false;
 
 
-
-		socket.on('get users',function(data){
-			var html = '';
-			for(i = 0;i<data.length;i++){
-				html += '<li class="list-group-item">' + data[i]+'</li>';
-			}
-			$users.html(html);
-
-
-			socket.on('new message',function(data){
-				$chat.append('<div class = "well"><strong>'+data.user+': </strong>'+data.msg+'</div>');
-				//alert(data.msg);
-			});
-		})
-
-	});
-
-		$messageForm.submit(function(e){
+	$userForm.submit(function(e){
 			e.preventDefault();
-			socket.emit('send message', $message.val());
-			$message.val('');
-		});
+			//EL SUBMIT SE ACTIVA CUANDO SE DA CLICK AL BOTON DEL FORMULARIO
+			//OBTENEMOS EL VALOR DEL CAMPO IP
+			var iptexto = ($('#txtIP').val())+"";
+			console.log(iptexto);
+			bandera = true;
 
+			//REESTABLECEMOS EL SOCKET CON LA NUEVA ip
+			socket = io('http://'+ iptexto +':3000');
 
-
-		socket.on('new message',function(data){
-			$chat.append('<div class = "well"><strong>'+data.user+': </strong>'+data.msg+'</div>');
-			//alert(data.msg);
-		});
-
-
-
-		$userForm.submit(function(e){
-			e.preventDefault();
+			//INDICAMOS AL SERVIDOR CON NEW USER QUE UN NUEVO USUARIO VA A ENTRAR
 			socket.emit('new user', $username.val(),function(data){
 					if(data){
 						$userFormArea.hide();
-						$('#sctIP').hide();
 						$messageArea.show();
 					}
 			});
 			$username.val('');
-		});
-		socket.on('get users',function(data){
-			var html = '';
-			for(i = 0;i<data.length;i++){
-				html += '<li class="list-group-item">' + data[i]+'</li>';
-			}
-			$users.html(html);
-		})
+
+			//activamos la opcion nuevo mensaje en donde se receptaran datos cada que haya un mensaje desde el servidor
+			socket.on('new message',function(data){
+				$chat.append('<div class = "well"><strong>'+data.user+': </strong>'+data.msg+'</div>');
+			});
+
+			//obtenemos la lista de usuarios desde el servidor
+			socket.on('get users',function(data){
+				var html = '';
+				//recorremos la lista de usuarios dentro del dato recibido desde el servidor
+				for(i = 0;i<data.length;i++)
+				{
+					html += '<li class="list-group-item">' + data[i]+'</li>';
+				}
+				//agregamos el codigo html al grupo de usuarios
+				$users.html(html);
+			});
+
+	});
+
+
+	
+	//en caso de escribir un nuevo mensaje activamos le boton del formulario para que lo envie
+	$messageForm.submit(function(e){
+		e.preventDefault();
+		socket.emit('send message', $message.val());
+		$message.val('');
+	});
+
+
+			
+	
+
+
 
 	});
 </script>
