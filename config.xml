@@ -13,7 +13,7 @@
         An example for phonegap build docs. 
     </description>
 	
-    <access origin="HOST*>
+    <access origin="HOST*/>
 
     <author href="https://build.phonegap.com" email="support@phonegap.com">
         Hardeep Shoker 
